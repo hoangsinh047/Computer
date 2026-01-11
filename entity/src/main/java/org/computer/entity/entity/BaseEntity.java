@@ -1,10 +1,7 @@
 package org.computer.entity.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
+import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -13,7 +10,9 @@ import java.util.UUID;
 public abstract class BaseEntity {
 
     @Id
-    @Column(name = "id", nullable = false, updatable = false)
+    @GeneratedValue
+    @UuidGenerator
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
     @Column(name = "created_at", nullable = false, updatable = false)

@@ -1,10 +1,6 @@
 package org.computer.entity.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +18,12 @@ public class User extends BaseEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
+
+    @Column(length = 20, unique = true)
+    private String phone;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Address> addresses = new ArrayList<>();
@@ -101,6 +101,14 @@ public class User extends BaseEntity {
 
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }
 

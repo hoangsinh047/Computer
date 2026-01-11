@@ -11,7 +11,7 @@ public class ProductMapper {
 
     public static ProductDto toDto(Product p) {
         if (p == null) return null;
-        return new ProductDto(
+        ProductDto dto = new ProductDto(
                 p.getId(),
                 p.getCreatedAt(),
                 p.getUpdatedAt(),
@@ -21,6 +21,14 @@ public class ProductMapper {
                 p.getBrand() != null ? p.getBrand().getId() : null,
                 p.getCategory() != null ? p.getCategory().getId() : null
         );
+        dto.setSku(p.getSku());
+        dto.setStockQuantity(p.getStockQuantity());
+        dto.setWarrantyMonths(p.getWarrantyMonths());
+        dto.setStatus(p.getStatus());
+        dto.setDiscount(p.getDiscount());
+        dto.setBrandName(p.getBrand() != null ? p.getBrand().getName() : null);
+        dto.setCategoryName(p.getCategory() != null ? p.getCategory().getName() : null);
+        return dto;
     }
 
     public static Product toEntity(ProductCreateDto dto) {
@@ -29,6 +37,11 @@ public class ProductMapper {
         p.setName(dto.getName());
         p.setDescription(dto.getDescription());
         p.setPrice(dto.getPrice());
+        p.setSku(dto.getSku());
+        p.setStockQuantity(dto.getStockQuantity());
+        p.setWarrantyMonths(dto.getWarrantyMonths());
+        p.setStatus(dto.getStatus());
+        p.setDiscount(dto.getDiscount());
         if (dto.getBrandId() != null) {
             Brand b = new Brand();
             b.setId(dto.getBrandId());
@@ -46,6 +59,11 @@ public class ProductMapper {
         if (dto.getName() != null) existing.setName(dto.getName());
         if (dto.getDescription() != null) existing.setDescription(dto.getDescription());
         if (dto.getPrice() != null) existing.setPrice(dto.getPrice());
+        if (dto.getSku() != null) existing.setSku(dto.getSku());
+        if (dto.getStockQuantity() != null) existing.setStockQuantity(dto.getStockQuantity());
+        if (dto.getWarrantyMonths() != null) existing.setWarrantyMonths(dto.getWarrantyMonths());
+        if (dto.getStatus() != null) existing.setStatus(dto.getStatus());
+        if (dto.getDiscount() != null) existing.setDiscount(dto.getDiscount());
         if (dto.getBrandId() != null) {
             Brand b = new Brand();
             b.setId(dto.getBrandId());

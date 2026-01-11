@@ -7,8 +7,10 @@ import org.computer.backend.api.mapper.UserMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -18,6 +20,13 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserDto>> listAll() {
+        List<User> users = userService.findAll();
+        List<UserDto> dtos = users.stream().map(UserMapper::toDto).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
@@ -32,4 +41,3 @@ public class UserController {
         return u.map(UserMapper::toDto).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
-

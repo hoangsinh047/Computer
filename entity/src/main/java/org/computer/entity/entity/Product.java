@@ -25,6 +25,21 @@ public class Product extends BaseEntity {
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
+    @Column(name = "sku", unique = true)
+    private String sku;
+
+    @Column(name = "stock_quantity")
+    private Integer stockQuantity;
+
+    @Column(name = "warranty_months")
+    private Integer warrantyMonths;
+
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "discount")
+    private BigDecimal discount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
@@ -68,6 +83,46 @@ public class Product extends BaseEntity {
         this.price = price;
     }
 
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
+
+    public Integer getStockQuantity() {
+        return stockQuantity;
+    }
+
+    public void setStockQuantity(Integer stockQuantity) {
+        this.stockQuantity = stockQuantity;
+    }
+
+    public Integer getWarrantyMonths() {
+        return warrantyMonths;
+    }
+
+    public void setWarrantyMonths(Integer warrantyMonths) {
+        this.warrantyMonths = warrantyMonths;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public BigDecimal getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(BigDecimal discount) {
+        this.discount = discount;
+    }
+
     public Category getCategory() {
         return category;
     }
@@ -108,4 +163,3 @@ public class Product extends BaseEntity {
         this.reviews = reviews;
     }
 }
-

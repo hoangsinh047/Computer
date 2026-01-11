@@ -1,7 +1,6 @@
 package org.computer.backend.service.product;
 
 import org.computer.backend.repository.product.ProductRepository;
-import org.computer.backend.repository.product.ProductRepositoryCustom;
 import org.computer.entity.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,11 +16,9 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-    private final ProductRepositoryCustom productRepositoryCustom;
 
-    public ProductServiceImpl(ProductRepository productRepository, ProductRepositoryCustom productRepositoryCustom) {
+    public ProductServiceImpl(ProductRepository productRepository) {
         this.productRepository = productRepository;
-        this.productRepositoryCustom = productRepositoryCustom;
     }
 
     @Override
@@ -31,7 +28,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> searchByName(String pattern) {
-        return productRepositoryCustom.findByNameLike(pattern);
+        return productRepository.findByNameLike(pattern);
     }
 
     @Override
@@ -54,6 +51,11 @@ public class ProductServiceImpl implements ProductService {
             existing.setPrice(product.getPrice());
             existing.setBrand(product.getBrand());
             existing.setCategory(product.getCategory());
+            existing.setSku(product.getSku());
+            existing.setStockQuantity(product.getStockQuantity());
+            existing.setWarrantyMonths(product.getWarrantyMonths());
+            existing.setStatus(product.getStatus());
+            existing.setDiscount(product.getDiscount());
             return productRepository.save(existing);
         });
     }

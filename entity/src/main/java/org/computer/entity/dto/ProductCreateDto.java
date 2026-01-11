@@ -15,6 +15,11 @@ public class ProductCreateDto {
     private BigDecimal price;
     private UUID brandId;
     private UUID categoryId;
+    private String sku;
+    private Integer stockQuantity;
+    private Integer warrantyMonths;
+    private String status;
+    private BigDecimal discount;
 
     public ProductCreateDto() {
     }
@@ -57,5 +62,45 @@ public class ProductCreateDto {
 
     public void setCategoryId(UUID categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
+
+    public Integer getStockQuantity() {
+        return stockQuantity;
+    }
+
+    public void setStockQuantity(Integer stockQuantity) {
+        this.stockQuantity = stockQuantity;
+    }
+
+    public Integer getWarrantyMonths() {
+        return warrantyMonths;
+    }
+
+    public void setWarrantyMonths(Integer warrantyMonths) {
+        this.warrantyMonths = warrantyMonths;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public BigDecimal getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(BigDecimal discount) {
+        this.discount = discount;
     }
 }

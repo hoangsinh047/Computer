@@ -5,6 +5,6 @@ import org.computer.entity.entity.Product;
 
 import java.util.UUID;
 
-public interface ProductRepository extends JpaRepository<Product, UUID> {
+public interface ProductRepository extends JpaRepository<Product, UUID>, ProductRepositoryCustom {
 }
 

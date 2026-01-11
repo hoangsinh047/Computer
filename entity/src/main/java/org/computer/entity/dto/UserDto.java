@@ -15,15 +15,18 @@ public class UserDto extends BaseDto {
     private String email;
     private Role role;
     private List<AddressDto> addresses = new ArrayList<>();
+    private String phone;
+
 
     public UserDto() {
     }
 
-    public UserDto(UUID id, java.time.Instant createdAt, java.time.Instant updatedAt, String username, String email, Role role) {
+    public UserDto(UUID id, java.time.Instant createdAt, java.time.Instant updatedAt, String username, String email, Role role, String phone) {
         super(id, createdAt, updatedAt);
         this.username = username;
         this.email = email;
         this.role = role;
+        this.phone = phone;
     }
 
     public String getUsername() {
@@ -56,6 +59,14 @@ public class UserDto extends BaseDto {
 
     public void setAddresses(List<AddressDto> addresses) {
         this.addresses = addresses;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     @Override
