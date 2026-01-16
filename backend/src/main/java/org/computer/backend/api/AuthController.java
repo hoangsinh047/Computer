@@ -8,9 +8,13 @@ import org.computer.backend.repository.user.UserRepository;
 import org.computer.backend.service.auth.AuthService;
 import org.computer.backend.service.auth.PasswordResetTokenService;
 import org.computer.entity.dto.UserDto;
+import org.computer.entity.entity.Role;
 import org.computer.entity.entity.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +27,8 @@ import java.util.UUID;
 @RequestMapping("/api/auth")
 @Validated
 public class AuthController {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     private final AuthService authService;
     private final UserRepository userRepository;
@@ -107,26 +113,49 @@ public class AuthController {
             @NotBlank String username,
             @NotBlank @Email String email,
             @NotBlank String password,
-            @NotBlank String confirmPassword
+            @NotBlank String confirmPassword,
+            String phone
     ) {}
 
-    @PostMapping("/register")
+    @PostMapping("/user/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req) {
         if (!req.password().equals(req.confirmPassword())) {
             return ResponseEntity.badRequest().body(Map.of("code", "PASSWORD_MISMATCH", "message", "Mật khẩu nhập lại không khớp"));
         }
+
         try {
-            User u = authService.register(req.username(), req.email(), req.password());
-            UserDto dto = UserMapper.toDto(u);
-            return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+            User u = authService.register(
+                    req.username(),
+                    req.email(),
+                    req.password(),
+                    req.phone(),
+                    Role.USER
+            );
+            return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.toDto(u));
         } catch (IllegalArgumentException e) {
-            return switch (e.getMessage()) {
-                case "USERNAME_TAKEN" -> ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(Map.of("code", "USERNAME_TAKEN", "message", "Username đã tồn tại"));
-                case "EMAIL_TAKEN" -> ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(Map.of("code", "EMAIL_TAKEN", "message", "Email đã tồn tại"));
-                default -> throw e;
-            };
+            return handleRegisterException(e);
+        }
+    }
+
+    @PostMapping("/admin/register")
+    public ResponseEntity<?> registerEmployee(@Valid @RequestBody RegisterRequest req) {
+
+        if (!req.password().equals(req.confirmPassword())) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("code", "PASSWORD_MISMATCH", "message", "Mật khẩu nhập lại không khớp"));
+        }
+
+        try {
+            User u = authService.register(
+                    req.username(),
+                    req.email(),
+                    req.password(),
+                    req.phone(),
+                    Role.EMPLOYEE   // CỐ ĐỊNH
+            );
+            return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.toDto(u));
+        } catch (IllegalArgumentException e) {
+            return handleRegisterException(e);
         }
     }
 
@@ -175,5 +204,17 @@ public class AuthController {
                 .map(UserMapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+    }
+
+    private ResponseEntity<?> handleRegisterException(IllegalArgumentException e) {
+        return switch (e.getMessage()) {
+            case "USERNAME_TAKEN" -> ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("code", "USERNAME_TAKEN", "message", "Username đã tồn tại"));
+            case  "EMAIL_TAKEN" -> ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("code", "EMAIL_TAKEN", "message", "Email đã tồn tại"));
+            case "DB_CONSTRAINT" -> ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("code", "CONSTRAINT_VIOLATION", "message", "Dữ liệu không hợp lệ"));
+            default -> throw e;
+        };
     }
 }

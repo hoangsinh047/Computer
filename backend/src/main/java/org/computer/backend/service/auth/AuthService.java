@@ -4,6 +4,7 @@ import org.computer.backend.repository.user.UserRepository;
 import org.computer.backend.security.JwtService;
 import org.computer.entity.entity.Role;
 import org.computer.entity.entity.User;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +40,11 @@ public class AuthService {
         return new LoginResult(token, jwtService.getAccessTokenTtlSeconds(), user);
     }
 
-    public User register(String username, String email, String password) {
+    public User register(String username, String email, String password, String phone, Role role) {
+        // Normalize inputs to avoid uniqueness surprises (trim, lower-case email)
+        username = username == null ? null : username.trim();
+        email = email == null ? null : email.trim().toLowerCase();
+
         if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("USERNAME_TAKEN");
         }
@@ -51,8 +56,24 @@ public class AuthService {
         u.setUsername(username);
         u.setEmail(email);
         u.setPassword(passwordEncoder.encode(password));
-        u.setRole(Role.USER);
+        u.setPhone(phone);
+        u.setRole(role);
 
-        return userRepository.save(u);
+        try {
+            return userRepository.save(u);
+        } catch (DataIntegrityViolationException ex) {
+            Throwable root = ex.getMostSpecificCause();
+            String msg = root != null ? root.getMessage() : ex.getMessage();
+            if (msg != null) {
+                String low = msg.toLowerCase();
+                if (low.contains("email")) {
+                    throw new IllegalArgumentException("EMAIL_TAKEN");
+                }
+                if (low.contains("username")) {
+                    throw new IllegalArgumentException("USERNAME_TAKEN");
+                }
+            }
+            throw new IllegalArgumentException("DB_CONSTRAINT");
+        }
     }
 }
